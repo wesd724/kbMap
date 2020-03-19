@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/css/api.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <i id="glc" class="fas fa-map-marker-alt"></i>
+    <i id="myloc" class="fas fa-street-view"></i>
+    <i id="cancel" class="fas fa-user-times"></i>
+    <i id="searchicon" class="fas fa-search"></i>
+    <div id="modal">
+        <div class="modal_content">
+            <h3 style="text-align: center"><strong>사용법<strong></h3>
+            <ul>
+                <li><i style="font-size: 18px" class="fas fa-map-marker-alt">: 사용자의 위치를 맵의 표시합니다</i></li><br>
+                <li><i class="fas fa-street-view">: 사용자의 위치를 맵 중앙으로 보이게 합니다</i></li><br>
+                <li><i class="fas fa-user-times">: 맵에서 사용자의 위치 표시를 없앱니다</i></li><br>
+                <li><i class="fas fa-search">: 원하는 위치를 검색합니다</i></li><p style="margin-left: 25px">(최대 15개 출력)</p>
+                </ul>
+            <button id="modal_close_btn" class="btn btn-primary">닫기</button>
+        </div>
+        <div class="modal_layer"></div>
+    </div>
+<script>
+    document.getElementById("modal_close_btn").onclick = () => {
+        document.getElementById("modal").style.display = "none";
+        document.getElementById("glc").style.display = "block";
+        document.getElementById("cancel").style.display = "block";
+        document.getElementById("searchicon").style.display = "block";
+    }  
+</script>
+   <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=1ahrp70rve&submodules=geocoder"></script>
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9f6d51948b3a364621963c2a2f6719cf&libraries=services"></script>
+    
+    <div id="kakao" style="width:100%; height:100%;"></div>
+    <script>
+		const container = document.getElementById('kakao');
+			const Koptions = {
+				center: new kakao.maps.LatLng(37.667184, 127.042941),
+				level: 3
+			};
+
+		const Kmap = new kakao.maps.Map(container, Koptions);
+    </script>
+    <script>
+        const glc = document.getElementById("glc");
+        let myloc = document.getElementById("myloc");
+        let watch;
+        
+        let rtl = [];
+        let mypos = [];
+        let count = 0;
+        let state;
+        
+        const imageSrc = '/image/marker.png';   
+        const imageSize = new kakao.maps.Size(49, 55);
+        const imageOption = {offset: new kakao.maps.Point(24, 55)};
+        const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
+        
+        glc.onclick = () => {
+            if(navigator.geolocation) {
+                myloc.style.display = "block";
+                watch = navigator.geolocation.watchPosition((pos) => {
+                myloc.onclick = '';
+                rtl.push({lat: pos.coords.latitude, lng: pos.coords.longitude});
+                let markerPosition = new kakao.maps.LatLng(rtl[count].lat, rtl[count].lng);
+                myloc.onclick = () => Kmap.panTo(markerPosition);
+                mypos[count] = new kakao.maps.Marker({
+                    position: markerPosition,
+                    image: markerImage,
+                });
+                if(count > 0) mypos[count-1].setMap(null);
+                mypos[count].setMap(Kmap);
+                count++;
+                }, (error) => {
+                    switch(error.code) {
+                        case error.UNKNOWN_ERROR:
+                            alert(error.message) // 기타 알 수 없는 오류가 발생하였을 때
+                            break;
+                        case error.PERMISSION_DENIED:
+                            alert(error.message) // 사용자가 위치정보 사용을 허용하지 않았을 때
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert(error.message) // 위치 정보 사용이 불가능할 때
+                            break;
+                        case error.TIMEOUT:
+                            alert(error.message) // 위치 정보를 가져오려 시도했지만, 시간이 초과되었을 때
+                            break;
+                        }
+                    });
+            } else {
+                alert("이 브라우저에서는 GPS를 지원되지 않습니다.");
+            }
+        }
+        glc.onmouseover = () => {
+            glc.style.color = "red";
+        }
+        glc.onmouseout = () => {
+            glc.style.color = "blue";
+        }
+        glc.ontouchstart = () => {
+            glc.style.color = "red";
+        }
+        glc.ontouchend = () => {
+            glc.style.color = "blue";
+        }
+    </script>
+    <script>
+        myloc.onmouseover = () => {
+            myloc.style.color = "#0f4c75";
+        }
+        myloc.onmouseout = () => {
+            myloc.style.color = "#1b262c";
+        }
+        myloc.ontouchstart = () => {
+            myloc.style.color = "#0f4c75";
+        }
+        myloc.ontouchend = () => {
+            myloc.style.color = "#1b262c";
+        }
+    </script>
+    <script>
+        let cancel = document.getElementById("cancel");
+        cancel.onclick = () => {
+            myloc.style.display = "none";
+            for(let i = 0; i < rtl.length; i++) {
+                mypos[i].setMap(null);
+            }
+            navigator.geolocation.clearWatch(watch);
+            myloc.onclick = null;
+            count = 0;
+            rtl = [];
+            mypos = [];
+        };
+        
+        cancel.onmouseover = () => {
+            cancel.style.color = "#5b8c85";
+        }
+        cancel.onmouseout = () => {
+            cancel.style.color = "#434e52";
+        }
+        cancel.ontouchstart = () => {
+            cancel.style.color = "#5b8c85";
+        }
+        cancel.ontouchend = () => {
+            cancel.style.color = "#434e52";
+        }
+    </script>
+    <div class="view" style="width:300px;">
+        <input class="kakaosearch form-control" style="background-color:rgba(255, 255, 255, 0.8); border:1px solid #1082f3;" placeholder="카카오 검색">
+        <div id="kakaolist" style="overflow:auto;height:150px;"></div>
+    </div>
+    <script>
+        const Sicon = document.getElementById("searchicon");
+        const view = document.getElementsByClassName("view")[0];
+        const k_search = document.getElementsByClassName("kakaosearch")[0];
+        const k_list = document.getElementById("kakaolist");
+        
+        Sicon.onmousedown = () => {
+            Sicon.style.color = "#676060";
+        }
+        Sicon.onmouseup = () => {
+            Sicon.style.color = "#000";
+            if(view.style.display == "") {
+                view.style.display = "block";
+            } else if(view.style.display == "block") {
+                view.style.display = ""; // "" == none
+                k_search.value = "";
+                k_list.innerHTML = "";
+                k_list.style.backgroundColor = null;
+            };
+        }
+        Sicon.onmouseover = () => {
+            Sicon.style.fontSize = "33px";
+        }
+        Sicon.onmouseout = () => {
+            Sicon.style.fontSize = "30px";
+        }
+        Sicon.ontouchstart = () => {
+            Sicon.style.fontSize = "33px";
+        }
+        Sicon.ontouchend = () => {
+            Sicon.style.fontSize = "30px";
+        }
+    </script>
+    
+    <script>
+        const Ksearch = document.getElementsByClassName("kakaosearch");
+        let move = [];
+        
+        let markers = [];
+        
+        const Klist = document.getElementById("kakaolist");
+        
+            Ksearch[0].addEventListener("keydown",(ev) => {
+                if(ev.keyCode == 13) {
+                    let places = new kakao.maps.services.Places();
+                    places.keywordSearch(Ksearch[0].value, (result, status) => {
+                        if (status === kakao.maps.services.Status.OK) {
+                                for(let i = 0; i < markers.length; i++) {
+                                    markers[i].setMap(null);
+                                }
+                                move = [];
+                                markers = [];
+                                console.log(result, result.length);
+                                for(let i = 0; i < result.length; i++) {
+                                    move[i] = new kakao.maps.LatLng(result[i].y,result[i].x);
+                        
+                                    markers[i] = new kakao.maps.Marker({
+                                        position: move[i],
+                                    });
+                                    markers[i].setMap(Kmap);// 마커 표시
+                                    //markers.push(marker);
+                                }
+                                Kmap.setCenter(move[0]); // 중심
+                        } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+
+                            alert('검색 결과가 없습니다.');
+                            return;
+                        } else if (status === kakao.maps.services.Status.ERROR) {
+
+                            alert('[서버 응답 오류]');
+                            return;
+                        }
+                        
+                        let output = "<table>"
+                        for(let i = 0; i < result.length; i++) {
+                            output +=
+                                "<tr>" +
+                                    "<td>" + result[i].address_name + ", " + result[i].place_name + "</td>" +
+                                "</tr>"  
+                        }
+                        Klist.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
+                        Klist.innerHTML = output;
+                        
+                        for(let j = 0; j < result.length; j++) {
+                            const Event = Klist.children[0].children[0].children[j].children[0];
+                            Event.onmousedown = () => {
+                                Event.style.backgroundColor = "#4d80e4"
+                            };
+                            Event.onmouseup = () => {
+                                Event.style.backgroundColor = "#46b3e6"
+                                for(let i = 0; i < markers.length; i++) {
+                                    markers[i].setMap(null);
+                                }
+                                markers[j].setMap(Kmap);
+                                Kmap.panTo(move[j]);
+                            }
+                            Event.onmouseover = () => {
+                                Event.style.backgroundColor = "#46b3e6"
+                            }
+                            Event.onmouseout = () => {
+                                Event.style.backgroundColor = "rgba(255, 255, 255, 0.7)";
+                            }
+                        }
+                    });
+                }
+        });
+    </script>
+<!--     
+    <input class="naversearch" placeholder="네이버 검색">
+    <div id="naver" style="width:500px; height:400px;"></div>
+    <script>
+		const Noptions = {
+			center: new naver.maps.LatLng(37.6632964, 127.0419669),
+			zoom: 15
+		};
+
+		const Nmap = new naver.maps.Map('naver', Noptions);
+        
+        const Nsearch = document.getElementsByClassName("naversearch");
+  
+         Nsearch[0].addEventListener("keydown",(ev) => {
+             if(ev.keyCode == 13) {
+                 naver.maps.Service.geocode({
+                  query: Nsearch[0].value  
+                }, (status, reponse) => {
+                   if(status == naver.maps.Service.Status.OK) {
+                       console.log(reponse)
+                   } 
+                }); 
+             }
+         });
+      
+    </script>
+    <div id="naverlist" style="overflow:auto; width:300px; height:150px; border: 1px solid">
+        <table border=1>
+            <tr>
+                <td>네이버 </td>
+            </tr>
+            <tr>
+                <td>gd</td>
+            </tr>
+        </table> 
+    </div> -->
+</body>
+</html>

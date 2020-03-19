@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+
+  </head>
+  <body>
+    <p id="demo"></p>
+    <script>
+      var xmlhttp = new XMLHttpRequest();
+
+      xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            var arr = JSON.parse(xmlhttp.responseText);
+            var out = "<table border='1'>";
+
+            for (var i = 0; i < arr.length; i++) {
+              out+=
+                "<tr>"+
+                "<td>"+ arr[i].firstname + "</td>" +
+                "<td>"+ arr[i].lastname + "</td>" +
+                "</tr>";
+            }
+            document.getElementById('demo').innerHTML = out;
+        }
+      };
+      xmlhttp.open("GET", "js/dat.json", true);
+      xmlhttp.send();
+    </script>
+  </body>

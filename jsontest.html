@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <p id="json"></p>
+    <script>
+        let req = new XMLHttpRequest();
+        
+        req.addEventListener("load", () => {
+            const jsonParse = JSON.parse(req.responseText);
+            console.log(jsonParse);
+            document.getElementById("json").innerHTML =
+                `${jsonParse.name + jsonParse["age"]} 그다음 ${jsonParse.data[0].toString() +                      jsonParse["data"][2].toString()} 마지막 ${jsonParse.property.first + 
+                     jsonParse["property"].second + jsonParse.property["third"] +
+                     jsonParse["property"]["hello"]}`;
+        });
+        
+//         req.onreadystatechange = () => {
+//             if(req.status == 200 && req.readyState == 4) {
+//                 const jsonParse = JSON.parse(req.responseText);
+//                 console.log(jsonParse);
+//                 document.getElementById("json").innerHTML =
+//                     `${jsonParse.name + jsonParse["age"]} 그다음 ${jsonParse.data[0].toString() +                     jsonParse["data"][2].toString()} 마지막 ${jsonParse.property.first + 
+//                      jsonParse["property"].second + jsonParse.property["third"] +
+//                      jsonParse["property"]["hello"]}`;
+//             }
+//         };
+        
+        req.open("GET", "js/data.json", true);
+        req.send(null);
+    </script>
+    jsontest
+</body>    
+</html>
