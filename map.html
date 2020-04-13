@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="/css/api.css">
+    <link rel="stylesheet" type="text/css" href="./css/api.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -42,7 +42,7 @@
     <script>
 		const container = document.getElementById('kakao');
 			const Koptions = {
-				center: new kakao.maps.LatLng(37.667184, 127.042941),
+				center: new kakao.maps.LatLng(37.5740381, 126.9745863),
 				level: 3
 			};
 
@@ -58,7 +58,7 @@
         let count = 0;
         let state;
         
-        const imageSrc = '/image/marker.png';   
+        const imageSrc = './image/marker.png';   
         const imageSize = new kakao.maps.Size(49, 55);
         const imageOption = {offset: new kakao.maps.Point(24, 55)};
         const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
