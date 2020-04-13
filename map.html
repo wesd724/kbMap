@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="./css/api.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -14,6 +14,18 @@
     <i id="myloc" class="fas fa-street-view"></i>
     <i id="cancel" class="fas fa-user-times"></i>
     <i id="searchicon" class="fas fa-search"></i>
+    <i id="accuracyloc" class="fas fa-compass"></i>
+    <i id="reload" class="fas fa-redo-alt" onclick="location.reload(true)"></i>
+    
+    <script>
+        const glc = document.getElementById("glc");
+        const myloc = document.getElementById("myloc");
+        const cancel = document.getElementById("cancel");
+        const searchicon = document.getElementById("searchicon");
+        const accuracyloc = document.getElementById("accuracyloc");
+    </script>
+    
+  <!----- modal window -------------------------------------------->  
     <div id="modal">
         <div class="modal_content">
             <h3 style="text-align: center"><strong>사용법<strong></h3>
@@ -21,20 +33,54 @@
                 <li><i style="font-size: 18px" class="fas fa-map-marker-alt">: 사용자의 위치를 맵의 표시합니다</i></li><br>
                 <li><i class="fas fa-street-view">: 사용자의 위치를 맵 중앙으로 보이게 합니다</i></li><br>
                 <li><i class="fas fa-user-times">: 맵에서 사용자의 위치 표시를 없앱니다</i></li><br>
-                <li><i class="fas fa-search">: 원하는 위치를 검색합니다</i></li><p style="margin-left: 25px">(최대 15개 출력)</p>
+                <li><i class="fas fa-search">: 원하는 위치를 검색합니다</i></li>
+                <p style="margin-left: 25px">(최대 15개 출력)</p>
+                <li><i class="fas fa-compass">:	높은 정확도의 위치 정보를 가져옵니다</i></li>
+                <p style="margin-left: 25px">(그러나 느린 응답 속도와 배터리 소모량 증가)</p>
+                <li><i class="fas fa-redo-alt">: 화면을 다시 시작합니다</i>
                 </ul>
             <button id="modal_close_btn" class="btn btn-primary">닫기</button>
         </div>
         <div class="modal_layer"></div>
     </div>
+            
+    <div id="errorModal">
+        <div class="modal_content">
+            <h4 style="text-align: center"><strong>메시지<strong></h4>
+                <h5 class="errorMessage" style="text-align: center"></h5>
+            <button id="Emodal_close_btn" class="btn btn-primary">닫기</button>
+        </div>
+        <div class="modal_layer"></div>
+    </div>
+            
 <script>
     document.getElementById("modal_close_btn").onclick = () => {
         document.getElementById("modal").style.display = "none";
         document.getElementById("glc").style.display = "block";
-        document.getElementById("cancel").style.display = "block";
         document.getElementById("searchicon").style.display = "block";
-    }  
+        document.getElementById("reload").style.display = "block";
+    }
 </script>
+<script>
+    const errorWindow = document.getElementById("errorModal");
+    const errorMessage = document.getElementsByClassName("errorMessage")[0];
+    
+    document.getElementById("Emodal_close_btn").onclick = () => {
+        if(errorWindow.style.display == "") {
+            errorWindow.style.display = "block";
+        } else if(errorWindow.style.display == "block") {
+            errorWindow.style.display = "";
+            errorMessage.textContent = "";
+        }
+    }
+    
+    function errorMsg(message) {
+        errorWindow.style.display = "block";
+        errorMessage.textContent = message;
+    }
+</script>
+ <!------------------------------------------------------------------------>
+            
    <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=1ahrp70rve&submodules=geocoder"></script>
 	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9f6d51948b3a364621963c2a2f6719cf&libraries=services"></script>
     
@@ -49,11 +95,9 @@
 		const Kmap = new kakao.maps.Map(container, Koptions);
     </script>
     <script>
-        const glc = document.getElementById("glc");
-        let myloc = document.getElementById("myloc");
         let watch;
         
-        let rtl = [];
+        let rtl = []; //real time location
         let mypos = [];
         let count = 0;
         let state;
@@ -63,9 +107,15 @@
         const imageOption = {offset: new kakao.maps.Point(24, 55)};
         const markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption);
         
+        const options = {
+            enableHighAccuracy: false
+        };
+        
         glc.onclick = () => {
             if(navigator.geolocation) {
                 myloc.style.display = "block";
+                cancel.style.display = "block";
+                accuracyloc.style.display = "block";
                 watch = navigator.geolocation.watchPosition((pos) => {
                 myloc.onclick = '';
                 rtl.push({lat: pos.coords.latitude, lng: pos.coords.longitude});
@@ -81,21 +131,21 @@
                 }, (error) => {
                     switch(error.code) {
                         case error.UNKNOWN_ERROR:
-                            alert(error.message) // 기타 알 수 없는 오류가 발생하였을 때
+                            errorMsg(error.message)// 기타 알 수 없는 오류가 발생하였을 때
                             break;
                         case error.PERMISSION_DENIED:
-                            alert(error.message) // 사용자가 위치정보 사용을 허용하지 않았을 때
+                            errorMsg(error.message) // 사용자가 위치정보 사용을 허용하지 않았을 때
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            alert(error.message) // 위치 정보 사용이 불가능할 때
+                            errorMsg(error.message) // 위치 정보 사용이 불가능할 때
                             break;
                         case error.TIMEOUT:
-                            alert(error.message) // 위치 정보를 가져오려 시도했지만, 시간이 초과되었을 때
+                            errorMsg(error.message) // 위치 정보를 가져오려 시도했지만, 시간이 초과되었을 때
                             break;
                         }
-                    });
+                    }, options);
             } else {
-                alert("이 브라우저에서는 GPS를 지원되지 않습니다.");
+                errorMsg("이 브라우저에서는 GPS를 지원되지 않습니다.");
             }
         }
         glc.onmouseover = () => {
@@ -126,17 +176,20 @@
         }
     </script>
     <script>
-        let cancel = document.getElementById("cancel");
         cancel.onclick = () => {
             myloc.style.display = "none";
             for(let i = 0; i < rtl.length; i++) {
                 mypos[i].setMap(null);
             }
+            options.enableHighAccuracy = false;
             navigator.geolocation.clearWatch(watch);
+            accuracyloc.style.color = "black";
             myloc.onclick = null;
             count = 0;
             rtl = [];
             mypos = [];
+            cancel.style.display = "none";
+            accuracyloc.style.display = "none";
         };
         
         cancel.onmouseover = () => {
@@ -152,8 +205,19 @@
             cancel.style.color = "#434e52";
         }
     </script>
+    <script>
+        accuracyloc.onclick = () => {
+            if(options.enableHighAccuracy == false) {
+                options.enableHighAccuracy = true;
+                accuracyloc.style.color = "red";
+            } else if(options.enableHighAccuracy == true) {
+                options.enableHighAccuracy = false;
+                accuracyloc.style.color = "black";
+            }
+        };
+    </script>
     <div class="view" style="width:300px;">
-        <input class="kakaosearch form-control" style="background-color:rgba(255, 255, 255, 0.8); border:1px solid #1082f3;" placeholder="카카오 검색">
+        <input class="kakaosearch form-control" style="background-color:rgba(255, 255, 255, 0.8); border:1px solid #1082f3;" placeholder="검색">
         <div id="kakaolist" style="overflow:auto;height:150px;"></div>
     </div>
     <script>
@@ -221,11 +285,11 @@
                                 Kmap.setCenter(move[0]); // 중심
                         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
 
-                            alert('검색 결과가 없습니다.');
+                            errorMsg('검색 결과가 없습니다.');
                             return;
                         } else if (status === kakao.maps.services.Status.ERROR) {
 
-                            alert('[서버 응답 오류]');
+                            errorMsg('[서버 응답 오류]');
                             return;
                         }
                         
