@@ -7,10 +7,10 @@ td {
 }
 
 
-#kakao {
-/*     float: left;
-    margin-right: 20px; */
-}
+/* #kakao {
+     float: left;
+    margin-right: 20px;
+} */
 .view{
     position: absolute;
     left: 50px;
@@ -18,18 +18,18 @@ td {
     z-index: 100; 
     display: none;
 }
-.kakaosearch {
-/*     position: absolute;
+/* .kakaosearch {
+     position: absolute;
     left: 150px;
     top: 50px;
-    z-index: 100; */
+    z-index: 100;
 }
 #kakaolist {
-/*     position:absolute;
+     position:absolute;
     top: 520px;
     left: 70px;
-    z-index: 100; */
-}
+    z-index: 100; 
+} */
 
 
 #searchicon {
@@ -101,7 +101,7 @@ td {
 }
 
 #modal .modal_content {
-  width:420px;
+  width:400px;
   margin:130px auto;
   padding:20px 0px;
   background:#f8f8f8;
