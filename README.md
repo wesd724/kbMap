@@ -1,5 +1,5 @@
 ## kbMap
-**using kako API 
+**using kakao API 
 (except "Map source", other files are testing files)** 
 <br>
 
