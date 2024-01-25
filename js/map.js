@@ -184,46 +184,6 @@ Ksearch[0].addEventListener("keydown", (ev) => {
     }
 });
 
-
-glc.onmouseover = () => {
-    glc.style.color = "red";
-}
-glc.onmouseout = () => {
-    glc.style.color = "blue";
-}
-glc.ontouchstart = () => {
-    glc.style.color = "red";
-}
-glc.ontouchend = () => {
-    glc.style.color = "blue";
-}
-
-myloc.onmouseover = () => {
-    myloc.style.color = "#0f4c75";
-}
-myloc.onmouseout = () => {
-    myloc.style.color = "#1b262c";
-}
-myloc.ontouchstart = () => {
-    myloc.style.color = "#0f4c75";
-}
-myloc.ontouchend = () => {
-    myloc.style.color = "#1b262c";
-}
-
-cancel.onmouseover = () => {
-    cancel.style.color = "#5b8c85";
-}
-cancel.onmouseout = () => {
-    cancel.style.color = "#434e52";
-}
-cancel.ontouchstart = () => {
-    cancel.style.color = "#5b8c85";
-}
-cancel.ontouchend = () => {
-    cancel.style.color = "#434e52";
-}
-
 Sicon.onmousedown = () => {
     Sicon.style.color = "#676060";
 }
@@ -237,16 +197,4 @@ Sicon.onmouseup = () => {
         k_list.innerHTML = "";
         k_list.style.backgroundColor = null;
     };
-}
-Sicon.onmouseover = () => {
-    Sicon.style.fontSize = "33px";
-}
-Sicon.onmouseout = () => {
-    Sicon.style.fontSize = "30px";
-}
-Sicon.ontouchstart = () => {
-    Sicon.style.fontSize = "33px";
-}
-Sicon.ontouchend = () => {
-    Sicon.style.fontSize = "30px";
 }

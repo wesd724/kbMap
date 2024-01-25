@@ -139,3 +139,35 @@ z-index:-1;
 #errorModal li {
   margin-left: 0px;
 }
+
+#glc {
+  color: blue;
+}
+
+#glc:hover {
+  color: red;
+}
+
+#myloc {
+  color: #1b262c;
+}
+
+#myloc:hover {
+  color: #0f4c75;
+}
+
+#cancel {
+  color: #434e52;
+}
+
+#cancel:hover {
+  color: #5b8c85;
+}
+
+#searchicon {
+  font-size: 30px;
+}
+
+#searchicon:hover {
+  font-size: 33px;
+}
