@@ -4,5 +4,4 @@
 <br>
 
 [Web Site](https://wesd724.github.io/kbMap/map.html)  
-[Map source](https://github.com/wesd724/kbMap/blob/master/js/map.js)  
-[WebView App](https://github.com/wesd724/KBM)
+[Map source](https://github.com/wesd724/kbMap/blob/master/js/map.js)
